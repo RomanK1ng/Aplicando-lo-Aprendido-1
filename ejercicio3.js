@@ -1,115 +1,124 @@
-// Instalar prompt-sync antes de usar: npm install prompt-sync
-const prompt = require('prompt-sync')({sigint: true});
+// Instalar con: npm install prompt-sync
+const prompt = require("prompt-sync")();
 
-// Clase para representar una tarea
-class Tarea {
-    constructor(titulo, descripcion, dificultad) {
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.dificultad = dificultad; // 1-3
-        this.estado = 0; // 0: Pendiente, 1: EnCurso, 2: Terminada, 3: Cancelada
-    }
+console.clear();
+console.log("¡Bienvenido!");
 
-    cambiarEstado(nuevoEstado) {
-        if (nuevoEstado >= 0 && nuevoEstado <= 3) {
-            this.estado = nuevoEstado;
-        } else {
-            console.log("Estado inválido");
-        }
-    }
+// Pedimos el nombre al usuario
+const nombre = prompt("Por favor, ingresa tu nombre: ");
 
-    mostrar() {
-        const estados = ["Pendiente", "EnCurso", "Terminada", "Cancelada"];
-        console.log(`Título: ${this.titulo}`);
-        console.log(`Descripción: ${this.descripcion}`);
-        console.log(`Dificultad: ${this.dificultad}`);
-        console.log(`Estado: ${estados[this.estado]}`);
-        console.log("---------------------------");
-    }
-}
+// Lista de tareas (array en memoria)
+let tareas = [];
 
-// Clase para manejar la lista de tareas
-class ListaTareas {
-    constructor() {
-        this.tareas = [];
-    }
+let opcion;
+do {
+    console.clear();
+    console.log(`¡Hola ${nombre}!`);
+    console.log("\n¿Qué deseas hacer?\n");
+    console.log("[1] Ver Mis Tareas.");
+    console.log("[2] Buscar una Tarea.");
+    console.log("[3] Agregar una Tarea.");
+    console.log("[0] Salir.\n");
 
-    agregarTarea(tarea) {
-        this.tareas.push(tarea);
-    }
+    opcion = prompt("> ");
 
-    listarTareas() {
-        if (this.tareas.length === 0) {
-            console.log("No hay tareas");
-            return;
-        }
-        this.tareas.forEach(t => t.mostrar());
-    }
+    switch (opcion) {
+        case "1": // Ver tareas
+            console.clear();
+            console.log("=== MIS TAREAS ===");
+            if (tareas.length === 0) {
+                console.log("No tienes tareas guardadas.");
+            } else {
+                tareas.forEach((t, i) => {
+                    console.log(`\n[${i + 1}] ${t.titulo}`);
+                });
+            }
+            prompt("\nPresiona ENTER para continuar.");
+            break;
 
-    cambiarEstadoTarea(titulo, nuevoEstado) {
-        const tarea = this.tareas.find(t => t.titulo === titulo);
-        if (tarea) {
-            tarea.cambiarEstado(nuevoEstado);
-            console.log("Estado cambiado con éxito");
-        } else {
-            console.log("Tarea no encontrada");
-        }
-    }
+        case "2": // Buscar tarea
+            console.clear();
+            const clave = prompt("Introduce el título de una Tarea para buscarla: ");
+            const coincidencias = tareas.filter(t => t.titulo.toLowerCase().includes(clave.toLowerCase()));
 
-    eliminarTarea(titulo) {
-        const index = this.tareas.findIndex(t => t.titulo === titulo);
-        if (index !== -1) {
-            this.tareas.splice(index, 1);
-            console.log("Tarea eliminada con éxito");
-        } else {
-            console.log("Tarea no encontrada");
-        }
-    }
-}
-
-// Función principal con menú
-function menu() {
-    const lista = new ListaTareas();
-    let opcion;
-
-    do {
-        console.log("\n--- MENÚ DE TAREAS ---");
-        console.log("1. Agregar tarea");
-        console.log("2. Listar tareas");
-        console.log("3. Cambiar estado de tarea");
-        console.log("4. Eliminar tarea");
-        console.log("0. Salir");
-        opcion = prompt("Elige una opción: ");
-
-        switch(opcion) {
-            case "1":
-                const titulo = prompt("Título de la tarea: ");
-                const descripcion = prompt("Descripción: ");
-                const dificultad = parseInt(prompt("Dificultad (1-3): "));
-                lista.agregarTarea(new Tarea(titulo, descripcion, dificultad));
+            if (coincidencias.length === 0) {
+                console.log("\nLa tarea no existe o no se ha encontrado.");
+                prompt("\nPresiona ENTER para volver al menú.");
                 break;
-            case "2":
-                lista.listarTareas();
-                break;
-            case "3":
-                const tituloCambio = prompt("Título de la tarea a cambiar: ");
-                console.log("Estados: 0-Pendiente, 1-EnCurso, 2-Terminada, 3-Cancelada");
-                const nuevoEstado = parseInt(prompt("Nuevo estado: "));
-                lista.cambiarEstadoTarea(tituloCambio, nuevoEstado);
-                break;
-            case "4":
-                const tituloEliminar = prompt("Título de la tarea a eliminar: ");
-                lista.eliminarTarea(tituloEliminar);
-                break;
-            case "0":
-                console.log("¡Hasta luego!");
-                break;
-            default:
-                console.log("Opción inválida");
-        }
+            }
 
-    } while(opcion !== "0");
-}
+            console.log("\nEstas son las tareas relacionadas:\n");
+            coincidencias.forEach((t, i) => {
+                console.log(`[${i + 1}] ${t.titulo}`);
+            });
 
-// Ejecutar el menú
-menu();
+            const num = parseInt(prompt("\n¿Deseas ver los detalles de alguna?\nIntroduce el número para verla o 0 para volver: "));
+
+            if (num > 0 && num <= coincidencias.length) {
+                const tarea = coincidencias[num - 1];
+                console.clear();
+                console.log("Esta es la tarea que elegiste:\n");
+                console.log(`${tarea.titulo}\n`);
+                console.log(`${tarea.descripcion}\n`);
+                console.log(`Estado: ${tarea.estado}`);
+                console.log(`Dificultad: ${tarea.dificultad}`);
+                console.log(`Vencimiento: ${tarea.vencimiento}`);
+                console.log(`Creación: ${tarea.creacion}\n`);
+
+                const editar = prompt("Si deseas editarla, presiona E, o presiona 0 para volver: ").toUpperCase();
+                if (editar === "E") {
+                    console.clear();
+                    console.log(`Estás editando la tarea ${tarea.titulo}.\n`);
+                    console.log("- Si deseas mantener los valores de un atributo, simplemente déjalo en blanco.\n");
+
+                    const nuevaDescripcion = prompt("1. Ingresa la descripción: ");
+                    const nuevoEstado = prompt("2. Estado ([P]endiente / [E]n curso / [T]erminada / [C]ancelada): ");
+                    const nuevaDificultad = prompt("3. Dificultad ([1] / [2] / [3]): ");
+                    const nuevoVencimiento = prompt("4. Vencimiento (dd/mm/aaaa): ");
+
+                    if (nuevaDescripcion.trim() !== "") tarea.descripcion = nuevaDescripcion;
+                    if (nuevoEstado.trim() !== "") tarea.estado = nuevoEstado;
+                    if (nuevaDificultad.trim() !== "") tarea.dificultad = nuevaDificultad;
+                    if (nuevoVencimiento.trim() !== "") tarea.vencimiento = nuevoVencimiento;
+
+                    console.log("\n¡Datos guardados!");
+                    prompt("\nPresiona ENTER para continuar.");
+                }
+            }
+            break;
+
+        case "3": // Agregar tarea
+            console.clear();
+            console.log("Estás creando una nueva tarea.\n");
+
+            const titulo = prompt("1. Ingresa el Título: ");
+            const descripcion = prompt("2. Ingresa la descripción: ");
+            const estado = prompt("3. Estado ([P]endiente / [E]n curso / [T]erminada / [C]ancelada): ");
+            const dificultad = prompt("4. Dificultad ([1] / [2] / [3]): ");
+            const vencimiento = prompt("5. Vencimiento (dd/mm/aaaa): ");
+
+            // Fecha de creación automática
+            const creacion = new Date().toLocaleDateString("es-AR");
+
+            tareas.push({
+                titulo,
+                descripcion,
+                estado,
+                dificultad,
+                vencimiento,
+                creacion
+            });
+
+            console.log("\n¡Datos guardados!");
+            prompt("\nPresiona ENTER para continuar.");
+            break;
+
+        case "0": // Salir
+            console.log("¡Hasta luego!");
+            break;
+
+        default:
+            console.log("Opción no válida, intenta de nuevo.");
+            prompt("Presiona ENTER para continuar.");
+    }
+} while (opcion !== "0");

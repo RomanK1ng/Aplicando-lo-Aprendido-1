@@ -1,0 +1,23 @@
+{
+  "name": "aplicando-lo-aprendido-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ejercicio2.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RomanK1ng/Aplicando-lo-Aprendido-1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RomanK1ng/Aplicando-lo-Aprendido-1/issues"
+  },
+  "homepage": "https://github.com/RomanK1ng/Aplicando-lo-Aprendido-1#readme",
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
+  }
+}
